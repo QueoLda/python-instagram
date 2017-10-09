@@ -84,7 +84,13 @@ class Media(ApiModel):
         if new_media.type == 'video':
             new_media.videos = {}
             for version, version_info in six.iteritems(entry['videos']):
-                new_media.videos[version] = Video.object_from_dictionary(version_info)
+                try:
+                    new_media.videos[version] = Video.object_from_dictionary(version_info)
+                except TypeError:
+                    # Fixes __init__() got an unexpected keyword argument 'id'
+                    # Is there a better way to ignore `id`?
+                    version_info.pop("id")
+                    new_media.videos[version] = Video.object_from_dictionary(version_info)
 
         if 'user_has_liked' in entry:
             new_media.user_has_liked = entry['user_has_liked']
