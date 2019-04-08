@@ -237,8 +237,12 @@ class UserInPhoto(ApiModel):
     @classmethod
     def object_from_dictionary(cls, entry):
         user = None
-        if 'user' in entry:
-            user = User.object_from_dictionary(entry['user'])
+        try:
+            if 'user' in entry:
+                user = User.object_from_dictionary(entry['user'])
+        except TypeError:
+            # Safe fail: We don't need user for our projects
+            pass
 
         if 'position' in entry:
             position = Position(entry['position']['x'], entry['position']['y'])
